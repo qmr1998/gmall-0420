@@ -19,6 +19,11 @@
     <modules>
         <module>gmall-admin</module>
         <module>gmall-common</module>
+        <module>gmall-pms</module>
+        <module>gmall-oms</module>
+        <module>gmall-sms</module>
+        <module>gmall-ums</module>
+        <module>gmall-wms</module>
     </modules>
 
     <properties>
