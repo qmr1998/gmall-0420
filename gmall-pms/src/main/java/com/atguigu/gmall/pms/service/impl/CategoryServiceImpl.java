@@ -1,7 +1,10 @@
 package com.atguigu.gmall.pms.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
-import java.util.Map;
+
+import java.util.List;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,5 +28,21 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
 
         return new PageResultVo(page);
     }
+
+    // 根据父id查询商品分类
+    @Override
+    public List<CategoryEntity> queryCategory(Long parentId) {
+
+        QueryWrapper<CategoryEntity> wrapper = new QueryWrapper<>();
+
+        // 构造查询条件
+        // 如果parentId为-1，表示查询所有分类，不需要 wrapper
+        if (parentId != -1) {
+            wrapper.eq("parent_id", parentId);
+        }
+
+        return baseMapper.selectList(wrapper);
+    }
+
 
 }

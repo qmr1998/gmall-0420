@@ -34,3 +34,6 @@ mybatis-plus: # mp的映射文件地址
   global-config:
     db-config:
       id-type: auto # id自增策略
+#logging:
+#  level:
+#    com.atguigu.gmall: debug

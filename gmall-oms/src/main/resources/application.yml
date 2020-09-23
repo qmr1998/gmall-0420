@@ -1,5 +1,5 @@
 server:
-  port: 18083
+  port: 18085
 # 以下配置放入配置中心管理，读取配置中心的配置需要在启动类加注解 @RefreshScope
 #spring:
 #  cloud:

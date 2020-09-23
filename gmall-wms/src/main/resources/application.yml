@@ -1,0 +1,36 @@
+server:
+  port: 18083
+# 以下配置放入配置中心管理，读取配置中心的配置需要在启动类加注解 @RefreshScope
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        port: 8719
+  zipkin:
+    base-url: http://localhost:9411 # zipkin地址
+    discovery-client-enabled: false
+    sender:
+      type: web
+  sleuth:
+    sampler:
+      probability: 1
+  datasource: # mysql数据库的数据源
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.157.132:3306/guli_wms
+    username: root
+    password: 123456
+  redis: # redis的地址
+    host: 192.168.157.132
+feign:
+  sentinel:
+    enabled: true
+mybatis-plus:
+  mapper-locations: classpath:mapper/wms/*.xml
+  type-aliases-package: com.atguigu.gmall.wms.entity
+  global-config:
+    db-config:
+      id-type: auto
