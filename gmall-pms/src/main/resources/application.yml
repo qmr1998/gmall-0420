@@ -37,3 +37,8 @@ mybatis-plus: # mp的映射文件地址
 #logging:
 #  level:
 #    com.atguigu.gmall: debug
+spring:
+  cloud:
+    alibaba:
+      seata:
+        tx-service-group: gmall_tx_group

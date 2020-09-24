@@ -11,6 +11,7 @@ import com.atguigu.gmall.pms.vo.SkuVo;
 import com.atguigu.gmall.pms.vo.SpuAttrValueVo;
 import com.atguigu.gmall.pms.vo.SpuVo;
 import com.atguigu.gmall.sms.vo.SkuSaleVo;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, SpuEntity> implements
 
     // 保存spu信息（包含9张表）
     @Override
+    @GlobalTransactional
     public void bigSave(SpuVo spu) {
         // 1.保存spu相关信息
         // 1.1 保存 pms_spu
@@ -174,6 +176,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, SpuEntity> implements
                 BeanUtils.copyProperties(skuVo, skuSaleVo);
                 skuSaleVo.setSkuId(skuId);
                 this.gmallSmsClient.saveSales(skuSaleVo);
+
+
             });
         }
 
