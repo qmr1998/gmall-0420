@@ -1,0 +1,32 @@
+server:
+  port: 18086 # 端口号
+# 以下配置放入配置中心管理，读取配置中心的配置需要在启动类加注解 @RefreshScope
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 # nacos注册中心地址
+    sentinel:
+      transport:
+        dashboard: localhost:8080 # sentinel地址
+        port: 8719 # 交互的端口号
+  zipkin:
+    base-url: http://localhost:9411 # zipkin地址
+    discovery-client-enabled: false
+    sender:
+      type: web
+  sleuth:
+    sampler:
+      probability: 1 # 采集率设置为1，全部采集
+  elasticsearch:
+    rest:
+      uris: http://192.168.157.132:9200
+  jackson:
+    default-property-inclusion: non_null
+feign:
+  sentinel:
+    enabled: true # 开启feign的sentinel功能
+logging:
+  level:
+    com.atguigu.gmall: debug
+

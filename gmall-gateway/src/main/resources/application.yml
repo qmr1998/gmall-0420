@@ -28,3 +28,4 @@ spring:
           uri: lb://wms-service
           predicates:
             - Path=/wms/**
+

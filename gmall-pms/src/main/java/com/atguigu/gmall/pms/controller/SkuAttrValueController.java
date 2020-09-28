@@ -34,6 +34,13 @@ public class SkuAttrValueController {
     @Autowired
     private SkuAttrValueService skuAttrValueService;
 
+    @RequestMapping("search/{cid}/{skuId}")
+    @ApiOperation("搜索功能之根据categoryId和skuId查询SkuAttrValueEntity，主要需要attrId,attrName,attrValue")
+    public ResponseVo<List<SkuAttrValueEntity>> querySearchSkuAttrValuesByCidAndSkuId(@PathVariable("cid") Long cid, @PathVariable("skuId") Long skuId) {
+        List<SkuAttrValueEntity> skuAttrValueEntities = this.skuAttrValueService.querySearchSkuAttrValuesByCidAndSkuId(cid, skuId);
+        return ResponseVo.ok(skuAttrValueEntities);
+    }
+
     /**
      * 列表
      */

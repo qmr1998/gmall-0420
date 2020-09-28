@@ -2,6 +2,7 @@ package com.atguigu.gmall.pms.controller;
 
 import java.util.List;
 
+import com.atguigu.gmall.pms.entity.SkuAttrValueEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,13 @@ public class SpuAttrValueController {
 
     @Autowired
     private SpuAttrValueService spuAttrValueService;
+
+    @RequestMapping("search/{cid}/{spuId}")
+    @ApiOperation("搜索功能之根据categoryId和spuId查询SpuAttrValueEntity，主要需要attrId,attrName,attrValue")
+    public ResponseVo<List<SpuAttrValueEntity>> querySearchSpuAttrValuesByCidAndSpuId(@PathVariable("cid") Long cid, @PathVariable("spuId") Long spuId) {
+        List<SpuAttrValueEntity> spuAttrValueEntities = this.spuAttrValueService.querySearchSpuAttrValuesByCidAndSpuId(cid, spuId);
+        return ResponseVo.ok(spuAttrValueEntities);
+    }
 
     /**
      * 列表
