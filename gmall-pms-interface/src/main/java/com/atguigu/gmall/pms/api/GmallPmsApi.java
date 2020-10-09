@@ -38,4 +38,11 @@ public interface  GmallPmsApi {
 
     @GetMapping("pms/spu/{id}")
     public ResponseVo<SpuEntity> querySpuById(@PathVariable("id") Long id);
+
+    // 根据父id查询商品分类
+    @GetMapping("pms/category/parent/{parentId}")
+    public ResponseVo<List<CategoryEntity>> queryAllCategory(@PathVariable("parentId") Long parentId);
+
+    @GetMapping("pms/category/subs/{parentId}")
+    public ResponseVo<List<CategoryEntity>> queryCategoriesLevelTwoWithSubByParentId(@PathVariable("parentId") Long parentId);
 }

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: index-service # 服务名称
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848

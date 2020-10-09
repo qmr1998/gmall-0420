@@ -1,6 +1,7 @@
 package com.atguigu.gmall.pms.service.impl;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,9 @@ import com.atguigu.gmall.pms.service.CategoryService;
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     @Override
     public PageResultVo queryPage(PageParamVo paramVo) {
@@ -42,6 +46,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
         }
 
         return baseMapper.selectList(wrapper);
+    }
+
+    // 根据父id查询商品子分类（二级分类）
+    @Override
+    public List<CategoryEntity> queryCategoriesLevelTwoWithSubByParentId(Long parentId) {
+        List<CategoryEntity> categoryEntityList = this.categoryMapper.queryCategoriesByPid(parentId);
+        return categoryEntityList;
     }
 
 

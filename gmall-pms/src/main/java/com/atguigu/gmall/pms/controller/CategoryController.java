@@ -98,4 +98,10 @@ public class CategoryController {
         return ResponseVo.ok(categoryEntityList);
     }
 
+    @GetMapping("subs/{parentId}")
+    @ApiOperation("根据父id查询商品子分类（二级分类）")
+    public ResponseVo<List<CategoryEntity>> queryCategoriesLevelTwoWithSubByParentId(@PathVariable("parentId") Long parentId) {
+        List<CategoryEntity> categoryEntityList = categoryService.queryCategoriesLevelTwoWithSubByParentId(parentId);
+        return ResponseVo.ok(categoryEntityList);
+    }
 }
