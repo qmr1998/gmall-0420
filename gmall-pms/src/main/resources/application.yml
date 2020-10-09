@@ -42,3 +42,11 @@ spring:
     alibaba:
       seata:
         tx-service-group: gmall_tx_group
+  rabbitmq:
+    host: 192.168.157.132
+    virtual-host: /muran
+    username: muran
+    password: muran
+    publisher-confirm-type: correlated
+    publisher-returns: true
+

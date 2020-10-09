@@ -115,7 +115,7 @@ class GmallSearchApplicationTests {
 
                         }
                         // spuAttrValueEntity
-                        ResponseVo<List<SpuAttrValueEntity>> spuAttrsResponseVo = this.pmsClient.querySearchSpuAttrValuesByCidAndSpuId(spuEntity.getCategoryId(), spuEntity.getId());
+                        ResponseVo<List<SpuAttrValueEntity>> spuAttrsResponseVo = this.pmsClient.querySearchSpuAttrValuesByCidAndSpuId(skuEntity.getCatagoryId(), spuEntity.getId());
                         List<SpuAttrValueEntity> searchSpuAttrValueEntities = spuAttrsResponseVo.getData();
                         if (!CollectionUtils.isEmpty(searchSpuAttrValueEntities)) {
                             attrValueVos.addAll(
