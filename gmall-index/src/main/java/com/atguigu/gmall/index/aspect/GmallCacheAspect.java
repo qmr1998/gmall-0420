@@ -6,6 +6,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.redisson.api.RBloomFilter;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class GmallCacheAspect {
     @Autowired
     private RedissonClient redissonClient;
 
+    @Autowired
+    private RBloomFilter bloomFilter;
+
     /**
      * api回顾：
      * 获取目标方法参数：joinPoint.getArgs()
@@ -44,6 +48,15 @@ public class GmallCacheAspect {
      */
     @Around("@annotation(GmallCache)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        // 布隆过滤器解决缓存穿透，先用布隆过滤器来判断，如果不存在，连缓存都不用查了，直接return null
+        // TODO: 将布隆过滤器放入单独的前置通知方法中
+        List<Object> args =  Arrays.asList(joinPoint.getArgs()); // 获取目标方法的参数
+        String pid = args.get(0).toString();
+        if(!this.bloomFilter.contains(pid)){
+            return null;
+        }
+
         // 获取切点方法的签名对象
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         // 获取目标方法对象
@@ -52,8 +65,8 @@ public class GmallCacheAspect {
         GmallCache gmallCache = method.getAnnotation(GmallCache.class);
         // 获取目标方法的返回值类型
         Class<?> returnType = method.getReturnType();
-        // 获取目标方法的参数
-        List<Object> args = Arrays.asList(joinPoint.getArgs());
+        // 获取目标方法的参数（置于最上方了）
+//        List<Object> args = Arrays.asList(joinPoint.getArgs());
 
         // --获取缓存中的前缀
         String prefix = gmallCache.prefix();
