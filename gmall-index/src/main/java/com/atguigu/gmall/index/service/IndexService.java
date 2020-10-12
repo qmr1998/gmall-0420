@@ -13,4 +13,13 @@ public interface IndexService {
 
     List<CategoryEntity> queryLevelTwoWithSubByPid(Long parentId);
 
+    void testLock() throws InterruptedException;
+
+    String readLock();
+
+    String writeLock();
+
+    String latch();
+
+    String countDown();
 }

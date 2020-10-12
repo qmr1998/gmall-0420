@@ -41,4 +41,59 @@ public class IndexController {
         return ResponseVo.ok(categoryEntities);
     }
 
+    @GetMapping("index/testlock")
+    @ApiOperation("测试本地锁和分布式锁的方法")
+    @ResponseBody
+    public ResponseVo testLock() throws InterruptedException {
+
+        this.indexService.testLock();
+
+        return ResponseVo.ok();
+    }
+
+    @GetMapping("index/read")
+    @ApiOperation("测试Redisson读锁的方法")
+    @ResponseBody
+    public ResponseVo<String> read(){
+        String msg = indexService.readLock();
+
+        return ResponseVo.ok(msg);
+    }
+
+    @GetMapping("index/write")
+    @ApiOperation("测试Redisson写锁的方法")
+    @ResponseBody
+    public ResponseVo<String> write(){
+        String msg = indexService.writeLock();
+
+        return ResponseVo.ok(msg);
+    }
+
+    /**
+     * 等待
+     * @return
+     */
+    @GetMapping("index/latch")
+    @ApiOperation("测试Redisson信号量的latch方法")
+    @ResponseBody
+    public ResponseVo<Object> countDownLatch(){
+
+        String msg = indexService.latch();
+
+        return ResponseVo.ok(msg);
+    }
+
+    /**
+     * 计数
+     * @return
+     */
+    @GetMapping("index/out")
+    @ApiOperation("测试Redisson信号量的countDown方法")
+    @ResponseBody
+    public ResponseVo<Object> out(){
+
+        String msg = indexService.countDown();
+
+        return ResponseVo.ok(msg);
+    }
 }
