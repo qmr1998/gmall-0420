@@ -105,5 +105,4 @@ public class SpuController {
         PageResultVo pageResultVo = this.spuService.querySpuByCidPage(cid, pageParamVo);
         return ResponseVo.ok(pageResultVo);
     }
-
 }

@@ -104,4 +104,11 @@ public class CategoryController {
         List<CategoryEntity> categoryEntityList = categoryService.queryCategoriesLevelTwoWithSubByParentId(parentId);
         return ResponseVo.ok(categoryEntityList);
     }
+
+    @GetMapping("all/{cid3}")
+    @ApiOperation("根据sku中的三级分类id查询一二三级分类 ")
+    public ResponseVo<List<CategoryEntity>> queryCategoriesByCid3(@PathVariable("cid3") Long cid3) {
+        List<CategoryEntity> categoryEntities = this.categoryService.queryCategoriesByCid3(cid3);
+        return ResponseVo.ok(categoryEntities);
+    }
 }

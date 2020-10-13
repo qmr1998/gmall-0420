@@ -1,0 +1,133 @@
+package com.eatguigu.gmall.item.service.impl;
+
+import com.alibaba.fastjson.JSON;
+import com.atguigu.gmall.common.bean.ResponseVo;
+import com.atguigu.gmall.pms.entity.*;
+import com.atguigu.gmall.pms.vo.ItemGroupVo;
+import com.atguigu.gmall.pms.vo.SaleAttrValueVo;
+import com.atguigu.gmall.sms.vo.ItemSaleVo;
+import com.atguigu.gmall.wms.entity.WareSkuEntity;
+import com.baomidou.mybatisplus.extension.api.R;
+import com.eatguigu.gmall.item.client.GmallPmsClient;
+import com.eatguigu.gmall.item.client.GmallSmsClient;
+import com.eatguigu.gmall.item.client.GmallWmsClient;
+import com.eatguigu.gmall.item.service.ItemService;
+import com.eatguigu.gmall.item.vo.ItemVo;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+ * @author Lee
+ * @date 2020-10-12  20:37
+ */
+@Service
+public class ItemServiceImpl implements ItemService {
+
+    @Autowired
+    private GmallPmsClient pmsClient;
+
+    @Autowired
+    private GmallSmsClient smsClient;
+
+    @Autowired
+    private GmallWmsClient wmsClient;
+
+    @Override
+    public ItemVo load(Long skuId) {
+
+        ItemVo itemVo = new ItemVo();
+
+        // 根据skuId查询sku的信息 1
+        ResponseVo<SkuEntity> skuEntityResponseVo = this.pmsClient.querySkuById(skuId);
+        SkuEntity skuEntity = skuEntityResponseVo.getData();
+        if (skuEntity == null) {
+            return null;
+        }
+        itemVo.setSkuId(skuId);
+        itemVo.setTitle(skuEntity.getTitle());
+        itemVo.setSubTitle(skuEntity.getSubtitle());
+        itemVo.setPrice(skuEntity.getPrice());
+        itemVo.setWeight(skuEntity.getWeight());
+        itemVo.setDefaultImage(skuEntity.getDefaultImage());
+
+        // 根据cid3查询分类信息 2
+        ResponseVo<List<CategoryEntity>> categoryResponseVo = this.pmsClient.queryCategoriesByCid3(skuEntity.getCatagoryId());
+        List<CategoryEntity> categoryEntities = categoryResponseVo.getData();
+        itemVo.setCategories(categoryEntities);
+
+        // 根据品牌的id查询品牌 3
+        ResponseVo<BrandEntity> brandEntityResponseVo = this.pmsClient.queryBrandById(skuEntity.getBrandId());
+        BrandEntity brandEntity = brandEntityResponseVo.getData();
+        if (brandEntity != null) {
+            itemVo.setBrandId(brandEntity.getId());
+            itemVo.setBrandName(brandEntity.getName());
+        }
+
+        // 根据spuId查询spu 4
+        ResponseVo<SpuEntity> spuEntityResponseVo = this.pmsClient.querySpuById(skuEntity.getSpuId());
+        SpuEntity spuEntity = spuEntityResponseVo.getData();
+        if (spuEntity != null) {
+            itemVo.setSpuId(spuEntity.getId());
+            itemVo.setSpuName(spuEntity.getName());
+
+        }
+
+        // 跟据skuId查询图片 5
+        ResponseVo<List<SkuImagesEntity>> skuImagesResponseVo = this.pmsClient.queryImagesBySkuId(skuId);
+        List<SkuImagesEntity> skuImagesEntities = skuImagesResponseVo.getData();
+        itemVo.setImages(skuImagesEntities);
+
+        // 根据skuId查询sku营销信息 6
+        ResponseVo<List<ItemSaleVo>> salesResponseVo = this.smsClient.querySalesBySkuId(skuId);
+        List<ItemSaleVo> itemSaleVos = salesResponseVo.getData();
+        itemVo.setSales(itemSaleVos);
+
+        // 根据skuId查询sku的库存信息 7
+        ResponseVo<List<WareSkuEntity>> wareResponseVo = this.wmsClient.queryWareSkusBySkuId(skuId);
+        List<WareSkuEntity> wareSkuEntities = wareResponseVo.getData();
+        if (!CollectionUtils.isEmpty(wareSkuEntities)) {
+            itemVo.setStore(wareSkuEntities.stream().anyMatch(wareSkuEntity -> wareSkuEntity.getStock() - wareSkuEntity.getStockLocked() > 0));
+        }
+
+
+        // 根据spuId查询spu下的所有sku的销售属性 8
+        ResponseVo<List<SaleAttrValueVo>> saleAttrResponseVo = this.pmsClient.querySkuAttrValuesBySpuId(skuEntity.getSpuId());
+        List<SaleAttrValueVo> saleAttrValueVos = saleAttrResponseVo.getData();
+        itemVo.setSaleAttrs(saleAttrValueVos);
+
+        // 当前sku的销售属性 9
+        ResponseVo<List<SkuAttrValueEntity>> skuAttrValueResponseVo = this.pmsClient.querySkuAttrValueBySkuId(skuId);
+        List<SkuAttrValueEntity> skuAttrValueEntities = skuAttrValueResponseVo.getData();
+        if (!CollectionUtils.isEmpty(skuAttrValueEntities)) {
+            Map<Long, String> map = skuAttrValueEntities.stream().collect(Collectors.toMap(SkuAttrValueEntity::getAttrId, SkuAttrValueEntity::getAttrValue));
+            itemVo.setSaleAttr(map);
+        }
+
+        // 根据spuId查询spu下的所有sku及销售属性的映射关系 10
+        ResponseVo<String> stringResponseVo = this.pmsClient.querySkuIdMappingSaleAttrValueBySpuId(skuEntity.getSpuId());
+        String json = stringResponseVo.getData();
+        itemVo.setSkuJsons(json);
+
+        // 根据spuId查询spu的海报信息 11
+        ResponseVo<SpuDescEntity> spuDescEntityResponseVo = this.pmsClient.querySpuDescById(skuEntity.getSpuId());
+        SpuDescEntity spuDescEntity = spuDescEntityResponseVo.getData();
+        if (spuDescEntity != null) {
+            String[] urls = StringUtils.split(spuDescEntity.getDecript(), ",");
+            itemVo.setSpuImages(Arrays.asList(urls));
+        }
+
+        // 根据cid3 spuId skuId查询组及组下的规格参数及值 12
+        ResponseVo<List<ItemGroupVo>> itemGroupResponseVo = this.pmsClient.queryGroupsBySpuIdAndSkuIdAndCid(skuEntity.getSpuId(), skuId, skuEntity.getCatagoryId());
+        List<ItemGroupVo> itemGroupVos = itemGroupResponseVo.getData();
+        itemVo.setGroups(itemGroupVos);
+
+        return itemVo;
+    }
+}

@@ -1,10 +1,14 @@
 package com.atguigu.gmall.pms.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.pms.entity.AttrEntity;
 import com.atguigu.gmall.pms.mapper.AttrMapper;
+import com.atguigu.gmall.pms.vo.AttrValueVo;
+import com.atguigu.gmall.pms.vo.SaleAttrValueVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,6 +30,9 @@ public class SkuAttrValueServiceImpl extends ServiceImpl<SkuAttrValueMapper, Sku
 
     @Autowired
     private AttrMapper attrMapper;
+
+    @Autowired
+    private SkuAttrValueMapper skuAttrValueMapper;
 
     @Override
     public PageResultVo queryPage(PageParamVo paramVo) {
@@ -52,5 +59,48 @@ public class SkuAttrValueServiceImpl extends ServiceImpl<SkuAttrValueMapper, Sku
         List<SkuAttrValueEntity> skuAttrValueEntities = baseMapper.selectList(new QueryWrapper<SkuAttrValueEntity>().eq("sku_id", skuId).in("attr_id", attrIds));
         return skuAttrValueEntities;
     }
+
+    // 根据spuId查询spu下的所有销售属性
+    @Override
+    public List<SaleAttrValueVo> querySkuAttrValuesBySpuId(Long spuId) {
+        List<SkuAttrValueEntity> skuAttrValueEntities = this.skuAttrValueMapper.querySkuAttrValuesBySpuId(spuId);
+        if (!CollectionUtils.isEmpty(skuAttrValueEntities)) {
+            Map<Long, List<SkuAttrValueEntity>> map = skuAttrValueEntities.stream().collect(Collectors.groupingBy(SkuAttrValueEntity::getAttrId));
+
+            List<SaleAttrValueVo> saleAttrValueVos = new ArrayList<>();
+
+            map.forEach((attrId, attrValueEntities) -> {
+                SaleAttrValueVo saleAttrValueVo = new SaleAttrValueVo();
+                saleAttrValueVo.setAttrId(attrId);
+                saleAttrValueVo.setAttrName(attrValueEntities.get(0).getAttrName());
+                saleAttrValueVo.setAttrValues(attrValueEntities.stream().map(SkuAttrValueEntity::getAttrValue).collect(Collectors.toSet()));
+
+                saleAttrValueVos.add(saleAttrValueVo);
+            });
+            return saleAttrValueVos;
+        }
+
+        return null;
+    }
+
+    // 根据skuId查询sku的销售属性
+    @Override
+    public List<SkuAttrValueEntity> querySkuAttrValueBySkuId(Long skuId) {
+        List<SkuAttrValueEntity> skuAttrValueEntities = this.baseMapper.selectList(new QueryWrapper<SkuAttrValueEntity>().eq("sku_id", skuId));
+        return skuAttrValueEntities;
+    }
+
+    @Override
+    public String querySkuIdMappingSaleAttrValueBySpuId(Long spuId) {
+
+        // [{"sku_id": 3, "attr_values": "暗夜黑,12G,512G"}, {"sku_id": 4, "attr_values": "白天白,12G,512G"}]
+        List<Map<String, Object>> maps = this.skuAttrValueMapper.querySkuIdMappingSaleAttrValueBySpuId(spuId);
+
+        // 转换成：{'暗夜黑,12G,512G': 3, '白天白,12G,512G': 4}
+        Map<Object, Object> jsonMap = maps.stream().collect(Collectors.toMap(map -> map.get("attr_values").toString(), map -> (Long) map.get("sku_id")));
+
+        return JSON.toJSONString(jsonMap);
+    }
+
 
 }

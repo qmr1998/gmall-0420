@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
  * @date 2020-09-21 18:48:44
  */
 @Mapper
+@Component
 public interface SpuAttrValueMapper extends BaseMapper<SpuAttrValueEntity> {
 	
 }
