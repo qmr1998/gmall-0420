@@ -24,3 +24,8 @@ spring:
 feign:
   sentinel:
     enabled: true
+threadPool:
+  corePoolSize: 100
+  maximumPoolSize: 500
+  keepAliveTime: 60
+  blockingQueueCapacity: 5000
