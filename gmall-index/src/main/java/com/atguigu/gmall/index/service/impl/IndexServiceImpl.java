@@ -46,17 +46,18 @@ public class IndexServiceImpl implements IndexService {
     public static final String KEY_PREFIX = "index:category:";
 
     // AOP实现的方法
-    @Override
-    @GmallCache(prefix = KEY_PREFIX, timeout = 129600, random = 7200, lock = "lock:")
-    public List<CategoryEntity> queryLevelOneCategories() {
-        System.out.println("目标方法");
-        ResponseVo<List<CategoryEntity>> responseVo = this.pmsClient.queryAllCategory(0L);
-        List<CategoryEntity> categoryEntities = responseVo.getData();
-        return categoryEntities;
-    }
+//    @Override
+//    @GmallCache(prefix = KEY_PREFIX, timeout = 129600, random = 7200, lock = "lock:")
+//    public List<CategoryEntity> queryLevelOneCategories() {
+//        System.out.println("目标方法");
+//        ResponseVo<List<CategoryEntity>> responseVo = this.pmsClient.queryAllCategory(0L);
+//        List<CategoryEntity> categoryEntities = responseVo.getData();
+//        return categoryEntities;
+//    }
 
     // 原方法
-    /*public List<CategoryEntity> queryLevelOneCategories2() {
+    @Override
+    public List<CategoryEntity> queryLevelOneCategories() {
         // 1、查询缓存中是否存在，若存在，直接从缓存中命中
         String json = redisTemplate.opsForValue().get(KEY_PREFIX + "0");
         if (StringUtils.isNotBlank(json)) {
@@ -75,7 +76,7 @@ public class IndexServiceImpl implements IndexService {
             this.redisTemplate.opsForValue().set(KEY_PREFIX + "0", JSON.toJSONString(categoryEntities), 90, TimeUnit.DAYS);
         }
         return categoryEntities;
-    }*/
+    }
 
     // AOP实现的方法
     @Override

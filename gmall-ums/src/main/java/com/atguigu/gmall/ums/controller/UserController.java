@@ -5,6 +5,8 @@ import java.util.List;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +41,7 @@ public class UserController {
      */
     @GetMapping
     @ApiOperation("分页查询")
-    public ResponseVo<PageResultVo> queryUserByPage(PageParamVo paramVo){
+    public ResponseVo<PageResultVo> queryUserByPage(PageParamVo paramVo) {
         PageResultVo pageResultVo = userService.queryPage(paramVo);
 
         return ResponseVo.ok(pageResultVo);
@@ -51,8 +53,8 @@ public class UserController {
      */
     @GetMapping("{id}")
     @ApiOperation("详情查询")
-    public ResponseVo<UserEntity> queryUserById(@PathVariable("id") Long id){
-		UserEntity user = userService.getById(id);
+    public ResponseVo<UserEntity> queryUserById(@PathVariable("id") Long id) {
+        UserEntity user = userService.getById(id);
 
         return ResponseVo.ok(user);
     }
@@ -62,8 +64,8 @@ public class UserController {
      */
     @PostMapping
     @ApiOperation("保存")
-    public ResponseVo<Object> save(@RequestBody UserEntity user){
-		userService.save(user);
+    public ResponseVo<Object> save(@RequestBody UserEntity user) {
+        userService.save(user);
 
         return ResponseVo.ok();
     }
@@ -73,8 +75,8 @@ public class UserController {
      */
     @PostMapping("/update")
     @ApiOperation("修改")
-    public ResponseVo update(@RequestBody UserEntity user){
-		userService.updateById(user);
+    public ResponseVo update(@RequestBody UserEntity user) {
+        userService.updateById(user);
 
         return ResponseVo.ok();
     }
@@ -84,10 +86,33 @@ public class UserController {
      */
     @PostMapping("/delete")
     @ApiOperation("删除")
-    public ResponseVo delete(@RequestBody List<Long> ids){
-		userService.removeByIds(ids);
+    public ResponseVo delete(@RequestBody List<Long> ids) {
+        userService.removeByIds(ids);
 
         return ResponseVo.ok();
     }
+
+    @GetMapping("check/{data}/{type}")
+    @ApiOperation("用户数据的校验，主要包括对：手机号、用户名、邮箱的唯一性校验")
+    public ResponseVo<Boolean> checkData(@PathVariable("data") String data, @PathVariable("type") Integer type) {
+        Boolean b = this.userService.checkData(data, type);
+        return ResponseVo.ok(b);
+
+    }
+
+    @PostMapping("/register")
+    @ApiOperation("注册用户")
+    public ResponseVo<Object> register(UserEntity userEntity, @RequestParam("code") String code) {
+        this.userService.register(userEntity, code);
+        return ResponseVo.ok();
+    }
+
+    @GetMapping("query")
+    @ApiOperation("查询用户")
+    public ResponseVo<UserEntity> queryUser(@RequestParam("loginName")String loginName,@RequestParam("password")String password){
+        UserEntity userEntity =this.userService.queryUser(loginName, password);
+        return ResponseVo.ok(userEntity);
+    }
+
 
 }

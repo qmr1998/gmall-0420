@@ -25,6 +25,9 @@ server:
 #    password: 123456
 #  redis:
 #    host: 192.168.157.132:3306
+spring:
+  thymeleaf:
+    cache: false
 feign:
   sentinel:
     enabled: true # 开启feign的sentinel功能

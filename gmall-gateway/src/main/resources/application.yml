@@ -36,6 +36,9 @@ spring:
           uri: lb://index-service
           predicates:
             - Host=gmall.com,index.gmall.com,www.gmall.com
+          filters:
+            - AddResponseHeader=xxx,yyy
+            - Auth=/
         - id: index-route
           uri: lb://index-service
           predicates:
@@ -48,3 +51,12 @@ spring:
           uri: lb://item-service
           predicates:
             - Path=/item/**
+        - id: auth-route
+          uri: lb://auth-service
+          predicates:
+            - Host=sso.gmall.com
+auth:
+  jwt:
+    pubKeyPath: F:\Java0422\WorkSpace\rsa\rsa.pub
+    cookieName: GMALL-TOKEN
+    headerName: token
