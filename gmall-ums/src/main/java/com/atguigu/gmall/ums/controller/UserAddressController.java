@@ -2,6 +2,7 @@ package com.atguigu.gmall.ums.controller;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,5 +90,13 @@ public class UserAddressController {
 
         return ResponseVo.ok();
     }
+
+    @GetMapping("user/{userId}")
+    @ApiOperation("根据用户id查询收货地址的数据接口")
+    public ResponseVo<List<UserAddressEntity>> queryAddressesByUserId(@PathVariable("userId") Long userId) {
+        List<UserAddressEntity> userAddressEntities = this.userAddressService.list(new QueryWrapper<UserAddressEntity>().eq("user_id", userId));
+        return ResponseVo.ok(userAddressEntities);
+    }
+
 
 }

@@ -25,6 +25,16 @@ spring:
     password: 123456
   redis: # redis的地址
     host: 192.168.157.132
+  rabbitmq:
+    host: 192.168.157.132
+    virtual-host: /muran
+    username: muran
+    password: muran
+    listener:
+      simple:
+        prefetch: 1
+        concurrency: 3
+        acknowledge-mode: manual
 feign:
   sentinel:
     enabled: true

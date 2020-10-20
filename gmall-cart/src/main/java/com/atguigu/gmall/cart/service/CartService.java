@@ -4,7 +4,6 @@ import com.atguigu.gmall.cart.pojo.Cart;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.List;
-import java.util.concurrent.Future;
 
 /**
  * @author Lee
@@ -26,4 +25,5 @@ public interface CartService {
 
     void deleteCartBySkuId(Long skuId);
 
+    List<Cart> queryCheckedCarts(Long userId);
 }
