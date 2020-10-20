@@ -49,20 +49,4 @@ public class RabbitConfig {
         return new Binding("ORDER_TTL_QUEUE", Binding.DestinationType.QUEUE, "ORDER_EXCHANGE", "order.ttl", null);
     }
 
-    /**
-     * 死信队列
-     * @return
-     */
-    @Bean
-    public Queue deadQueue(){
-        return QueueBuilder.durable("ORDER_DEAD_QUEUE").build();
-    }
-
-    /**
-     * 把死信队列绑定给死信交换机（ORDER_EXCHANGE）
-     */
-    @Bean
-    public Binding deadBinding(){
-        return new Binding("ORDER_DEAD_QUEUE", Binding.DestinationType.QUEUE, "ORDER_EXCHANGE", "order.dead", null);
-    }
 }

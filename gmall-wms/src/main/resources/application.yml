@@ -35,6 +35,8 @@ spring:
         prefetch: 1
         concurrency: 3
         acknowledge-mode: manual
+    publisher-returns: true
+    publisher-confirm-type: correlated
 feign:
   sentinel:
     enabled: true
